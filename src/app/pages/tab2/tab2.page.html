@@ -1,0 +1,23 @@
+<ion-header no-border>
+  <ion-toolbar color="dark">
+    <ion-title>
+      Encabezados
+    </ion-title>
+  </ion-toolbar>
+
+  <ion-segment scrollable mode="md" color="primary" (ionChange)="segmentChanged($event)">
+    <ion-segment-button
+      *ngFor="let category of categories"
+      mode="md"
+      [value]="category"
+    >
+      <ion-label text-capitalize>{{ category }}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+</ion-header>
+
+<ion-content color="dark">
+
+  <app-noticias [noticias]="noticias"></app-noticias>
+
+</ion-content>
