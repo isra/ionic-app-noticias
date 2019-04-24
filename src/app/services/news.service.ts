@@ -18,6 +18,11 @@ const headers = new HttpHeaders({
 })
 export class NewsService {
 
+  page = 0;
+
+  pageCategoria = 0;
+  category: string = '';
+
   constructor(
     private http: HttpClient
   ) {
@@ -33,11 +38,19 @@ export class NewsService {
   getTopHeadlines(): Observable<TopHeadlines> {
     //const url = `https://newsapi.org/v2/top-headlines?country=mx&apiKey=af25402b616b4427b680f2dc44510d08`;
     //return this.http.get<TopHeadlines>(url);
-    return this.getQuery('/top-headlines?country=mx');
+    this.page++;
+    return this.getQuery(`/top-headlines?country=mx&page=${this.page}`);
   }
 
   getCategory(category: string): Observable<TopHeadlines> {
-    const query = `/top-headlines?country=mx&category=${category}`;
+    if (this.category === category) {
+      this.pageCategoria++;
+    } else {
+      this.pageCategoria = 1;
+    }
+    this.category = category;
+
+    const query = `/top-headlines?country=mx&category=${category}&page=${this.pageCategoria}`;
     return this.getQuery(query);
   }
 }

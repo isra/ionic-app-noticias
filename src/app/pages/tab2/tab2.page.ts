@@ -1,6 +1,6 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
 
-import { IonSegment } from '@ionic/angular';
+import { IonSegment, IonInfiniteScroll } from '@ionic/angular';
 
 import { from } from 'rxjs';
 import { NewsService } from '../../services/news.service';
@@ -16,10 +16,12 @@ export class Tab2Page implements AfterViewInit{
 
   noticias: Article[] = [];
 
-
+  categoryCurrent: string;
+  category: string;
 
 
   @ViewChild(IonSegment) segment: IonSegment;
+  @ViewChild(IonInfiniteScroll) ifiniteScroll: IonInfiniteScroll
 
   categories = [
     'general',
@@ -39,20 +41,39 @@ export class Tab2Page implements AfterViewInit{
 
   ngAfterViewInit(): void {
     this.segment.value = 'general';
-    this.getNoticias('general');
+    this.category = 'general';
+    this.categoryCurrent = 'general';
+    this.getNoticias();
   }
 
 
   segmentChanged(event: any): void {
-    this.getNoticias(event.detail.value);
+    this.category = event.detail.value;
+    this.getNoticias();
 
   }
 
-  private getNoticias(category: string): void {
-    this.service.getCategory(category).subscribe(response => {
-      this.noticias = response.articles;
-      console.log(this.noticias);
+  private getNoticias(eventCall?: any): void {
+    this.service.getCategory(this.category).subscribe(response => {
+      if (this.categoryCurrent === this.category) {
+        this.noticias.push(...response.articles);
+      } else {
+        this.categoryCurrent = this.category;
+        this.noticias = response.articles;
+      }
+      if (eventCall) {
+        eventCall();
+        if (response.articles.length === 0) {
+          this.ifiniteScroll.disabled = true;
+        }
+      }
     })
+  }
+
+  loadData(event): void {
+    this.getNoticias(function(){
+      event.target.complete();
+    });
   }
 
 }
